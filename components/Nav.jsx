@@ -9,24 +9,8 @@ const links = [
     path: "/",
   },
   {
-    name: "pedidos",
+    name: "meus pedidos",
     path: "/meus-pedidos",
-  },
-  {
-    name: "horário",
-    path: "/horario-funcionamento",
-  },
-  {
-    name: "taxa de entrega",
-    path: "/taxa-entrega",
-  },
-  {
-    name: "formas de pagamento",
-    path: "/formas-pagamento",
-  },
-  {
-    name: "Whatsapp",
-    path: "/fale-conosco",
   },
 ]
 

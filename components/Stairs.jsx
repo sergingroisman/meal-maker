@@ -9,9 +9,19 @@ const stairAnimation = {
     top: "100%",
   },
   "exit": {
-    top: ["100%" ,"0%"],
+    top: ["100%", "0%"],
   }
 }
+
+const anim = () => {
+  return {
+    initial: "initial",
+    animate: "enter",
+    exit: "exit",
+    variants: stairAnimation,
+  }
+}
+
 
 // calcula o index reverso para os degraus diminuir gradativamente
 const reverseIndex = (index) => {
@@ -20,9 +30,6 @@ const reverseIndex = (index) => {
 }
 
 const Stairs = () => {
-  const x = useMotionValue({ start: 0, end: 100 });
-  const y = useTransform(x, (value) => value.end - value.start);
-
   return (
     <>
       {/* 
@@ -35,14 +42,7 @@ const Stairs = () => {
         return (
           <motion.div
             key={index}
-            style={{
-              x: x.start,
-              opacity: y,
-            }}
-            variants={stairAnimation}
-            initial="initial"
-            animate="animate"
-            exit="exit"
+            {...anim()}
             transition={{
               duration: 0.4,
               ease: "easeInOut",
