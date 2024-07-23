@@ -10,7 +10,6 @@ import { fetchRestaurant } from "@/services/api";
 const Header = async () => {
   const restaurant = await fetchRestaurant();
   
-  console.log(restaurant)
   const signSignOutBtn = (loggedIn) => {
     if (!loggedIn) {
       return (
