@@ -70,23 +70,23 @@ const MenuTabs = ({ restaurant }) => {
       <div className="w-full mx-auto grid grid-cols-1 sm:grid-cols-12 gap-2">
         {/* cardapio */}
         <div className="sm:col-span-8">
-          <TabContentTransition key={activeTab}>
+          {/* <TabContentTransition key={activeTab}> */}
             <TabsContent value="cardapio" className="w-full">
               <MenuList menus={restaurant.menus} />
             </TabsContent>
-          </TabContentTransition>
+          {/* </TabContentTransition> */}
           {/* promo */}
-          <TabContentTransition tabValue="promo">
+          {/* <TabContentTransition tabValue="promo"> */}
             <TabsContent value="promo" className="w-full">
               Promo
             </TabsContent>
-          </TabContentTransition>
+          {/* </TabContentTransition> */}
           {/* sacola */}
-          <TabContentTransition tabValue="sacola">
+          {/* <TabContentTransition tabValue="sacola"> */}
             <TabsContent value="sacola" className="w-full">
               Sacola
             </TabsContent>
-          </TabContentTransition>
+          {/* </TabContentTransition> */}
         </div>
         <div className="sm:col-span-4">Sacola vazia</div>
       </div>

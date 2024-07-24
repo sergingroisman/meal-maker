@@ -1,4 +1,5 @@
 import { JetBrains_Mono } from "next/font/google"
+import { SessionProvider } from "next-auth/react"
 import "./globals.css"
 
 // components
@@ -24,6 +25,8 @@ export default function RootLayout({ children }) {
         <Header />
         <StairTransition />
         <PageTransition>{children}</PageTransition>
+        {/* <SessionProvider session={session}>
+        </SessionProvider> */}
       </body>
     </html>
   )
