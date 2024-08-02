@@ -30,23 +30,19 @@ export function SignupForm() {
     registerUserAction,
     INITIAL_STATE
   )
-  console.log(formState)
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{
-        opacity: 1,
-        transition: { delay: 1, duration: 0.4, ease: "easeInOut" }
-      }}
-    >
-      <div className="w-full max-w-md">
+    <div className={`w-full max-w-md ${isMobile && "pt-[50px]"}`}>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{
+          opacity: 1,
+          transition: { delay: 0.4, duration: 0.2, ease: "easeIn" }
+        }}
+      >
         <form action={formAction}>
-          <Card>
+          <Card className="w-full">
             <CardHeader className="space-y-1">
-              <CardTitle className="text-3xl font-bold">Sign Up</CardTitle>
-              <CardDescription>
-                Enter your details to create a new account
-              </CardDescription>
+              <CardTitle className="text-3xl font-bold">Criar conta</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -55,7 +51,7 @@ export function SignupForm() {
                   id="name"
                   name="name"
                   type="text"
-                  placeholder="name"
+                  placeholder="Nome Completo"
                 />
                 <ZodErrors error={formState?.zodErrors?.name} />
               </div>
@@ -76,24 +72,34 @@ export function SignupForm() {
                   id="password"
                   name="password"
                   type="password"
-                  placeholder="password"
+                  placeholder="senha"
+                />
+                <ZodErrors error={formState?.zodErrors?.password} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Repita a senha</Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="senha"
                 />
                 <ZodErrors error={formState?.zodErrors?.password} />
               </div>
             </CardContent>
             <CardFooter className="flex flex-col">
-              <SubmitButton className="w-full" text="Sign Up" loadingText="Loading" />
+              <SubmitButton className="w-full" text="Criar Conta" loadingText="Loading" />
               <ApiErrors error={formState?.ApiErrors} />
+              <div className="mt-4 text-center text-sm">
+                Já tem conta?
+                <Link className="underline ml-2" href="/signin">
+                  Fazer login
+                </Link>
+              </div>
             </CardFooter>
           </Card>
-          <div className="mt-4 text-center text-sm">
-            Have an account?
-            <Link className="underline ml-2" href="signin">
-              Sing In
-            </Link>
-          </div>
         </form>
-      </div>
-    </motion.div>
+      </motion.div>
+    </div>
   )
 }

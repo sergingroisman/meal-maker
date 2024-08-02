@@ -5,8 +5,16 @@ export async function middleware(request) {
   const user = await getUserLoader()
   const currentPath = request.nextUrl.pathname
 
-  if (currentPath.startsWith("/meus-pedidos") && user.ok === false) {
+  if (currentPath.startsWith("/pedidos") && user.ok === false) {
     return NextResponse.redirect(new URL("/signin", request.url))
+  }
+
+  if (currentPath.startsWith("/signup") && user.ok === true) {
+    return NextResponse.redirect(new URL("/", request.url))
+  }
+
+  if (currentPath.startsWith("/signin") && user.ok === true) {
+    return NextResponse.redirect(new URL("/", request.url))
   }
 
   return NextResponse.next()
