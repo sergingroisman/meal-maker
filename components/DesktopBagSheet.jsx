@@ -11,10 +11,22 @@ import MobilePaymentSheet from './MobilePaymentSheet'
 import useSession from './custom/useSession'
 import MobileRemoveItemSheet from './MobileRemoveItemSheet'
 import { createOrdersByUser } from '@/services/api'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { Badge } from './ui/badge'
+import { useRouter } from "next/navigation"
+import { Loader2 } from "lucide-react"
+
+function Loader({ text }) {
+  return (
+    <div className="flex items-center space-x-2">
+      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      <p>{text}</p>
+    </div>
+  )
+}
 
 const DesktopBagSheet = () => {
+  const [pending, setPending] = useState(false)
   const data = useStore((state) => state.data)
   const resetState = useStore((state) => state.resetState)
   const [isOpen, setIsOpen] = useState(false)
@@ -22,19 +34,22 @@ const DesktopBagSheet = () => {
   const router = useRouter()
 
   const handleSendOrder = async () => {
+    setPending(true)
     try {
       await createOrdersByUser(data)
       setIsOpen(false)
       resetState()
+      setPending(false)
       router.push("/pedidos")
     } catch (error) {
+      setPending(false)
       console.log(error)
     }
   }
 
 
   const isDisbledButton = () => {
-    return data.payment_type === ""
+    return data.payment_type === "" || data.hasAddress === false
   }
 
   const sheetFooterButtons = () => {
@@ -50,11 +65,13 @@ const DesktopBagSheet = () => {
 
     return (
       <div className="pt-[16px]">
-        <Button 
-          onClick={() => handleSendOrder()} 
+        <Button
+          aria-disabled={pending}
+          disabled={pending}
+          onClick={() => handleSendOrder()}
           className={`w-full text-white ${isDisbledButton() ? "bg-[#f37a83] bg-opacity-50 cursor-not-allowed" : "bg-accent"}`}
         >
-          Fazer pedido
+          {pending ? <Loader text={"Loading"} /> : "Fazer pedido"}
         </Button>
       </div>
     )
@@ -68,7 +85,15 @@ const DesktopBagSheet = () => {
           size="md"
           className="flex items-center gap-2">
           <div className="flex items-center gap-3">
-            <BsHandbag className="h-6 w-6" />
+            <div className="relative flex items-center gap-2">
+              <BsHandbag className="h-6 w-6" />
+              {data.quantityTotal > 0 && (
+                <div className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                </div>
+              )}
+            </div>
             <div className="flex flex-col items-start">
               <span className="text-md font-semibold">{formatPrice(data.total)}</span>
               <span className="text-sm text-muted-foreground">{`${data.quantityTotal} items`}</span>

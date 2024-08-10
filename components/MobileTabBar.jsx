@@ -17,6 +17,16 @@ import useStore from "@/store/useStore"
 import { formatPrice } from "@/lib/utils"
 import MobileRemoveItemSheet from "./MobileRemoveItemSheet"
 import { createOrdersByUser } from "@/services/api"
+import { Loader2 } from "lucide-react"
+
+function Loader({ text }) {
+  return (
+    <div className="flex items-center space-x-2">
+      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      <p>{text}</p>
+    </div>
+  )
+}
 
 const links = [
   {
@@ -40,6 +50,7 @@ const links = [
 ]
 
 const MobileTabBar = () => {
+  const [pending, setPending] = useState(false)
   const data = useStore((state) => state.data)
   const resetState = useStore((state) => state.resetState)
   const pathname = usePathname()
@@ -49,27 +60,30 @@ const MobileTabBar = () => {
 
   const handleSendOrder = async () => {
     try {
-      await createOrdersByUser(data)
-      setIsOpen(false)
-      resetState()
-      router.push("/pedidos")
+      if (isDisbledButton() === false) {
+        await createOrdersByUser(data)
+        setIsOpen(false)
+        resetState()
+        router.push("/pedidos")
+      }
     } catch (error) {
       console.log(error)      
     }
   }
 
   const isDisbledButton = () => {
-    console.log("Payment Type:", data.payment_type)
-    return data.payment_type === ""
+    return data.payment_type === "" || data.hasAddress === false
   }
 
   const sheetFooterButtons = () => {
     if (!isLoggedIn) {
       return (
         <>
-          <Button variant="outline" className="w-full mt-4">
-            Fazer login com Celular
-          </Button>
+          <Link href="/signin">
+            <Button onClick={() => setIsOpen(false)} variant="outline" className="w-full mt-4">
+              Fazer login com Celular
+            </Button>
+          </Link>
         </>
       )
     }
@@ -77,17 +91,19 @@ const MobileTabBar = () => {
     return (
       <div className="pt-[16px]">
         <Button
-          onClick={() => handleSendOrder()} 
+          aria-disabled={pending}
+          disabled={pending}
+          onClick={() => handleSendOrder()}
           className={`w-full text-white ${isDisbledButton() ? "bg-[#f37a83] bg-opacity-50 cursor-not-allowed hover:bg-[#f37a83]" : "bg-accent"}`}
         >
-          Fazer pedido
+          {pending ? <Loader text={"Loading"} /> : "Fazer pedido"}
         </Button>
       </div>
     )
   }
   
   return (
-    <IF condition={!pathname.includes("/pedidos/") && !pathname.includes("/signin") && !pathname.includes("/signup")}>
+    <IF condition={!pathname.includes("/pedidos/") && !pathname.includes("/signin") && !pathname.includes("/signup") && !pathname.includes("/perfil")}>
       <div>
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t">
           <IF condition={data.quantityTotal > 0}>
@@ -95,7 +111,15 @@ const MobileTabBar = () => {
               <SheetTrigger asChild>
                 <div onClick={() => setIsOpen(true)} className="flex items-center justify-between px-4 py-2 bg-accent hover:bg-accent-hover transition-colors">
                   <div className="flex items-center space-x-2 text-white">
-                    <BsHandbag className="h-6 w-6" />
+                    <div className="relative flex items-center gap-2">
+                      <BsHandbag className="h-6 w-6" />
+                      {data.quantityTotal > 0 && (
+                        <div className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                        </div>
+                      )}
+                    </div>
                     <span className="text-sm">{data.quantityTotal}</span>
                   </div>
                   <Button className="text-white bg-accent hover:bg-accent-hover transition-colors">Ver sacola</Button>

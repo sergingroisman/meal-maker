@@ -20,6 +20,7 @@ import { ZodErrors } from "./custom/ZodErrors"
 import { SubmitButton } from "./custom/SubmitButton"
 import { ApiErrors } from "./custom/ApiErrors"
 import useDimensions from "./custom/useDimensions"
+import MaskedInput from "react-text-mask"
 
 const INITIAL_STATE = {
   data: null,
@@ -29,8 +30,8 @@ export function SigninForm() {
   const [formState, formAction] = useFormState(loginUserAction, INITIAL_STATE)
   const { isMobile } = useDimensions()
 
-  return (
-    <div className={`w-full max-w-md ${isMobile && "pt-[50px]"}`}>
+  return (  
+    <div className={`w-full max-w-md ${!isMobile && "pt-[50px]"}`}>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{
@@ -38,19 +39,40 @@ export function SigninForm() {
           transition: { delay: 0.4, duration: 0.2, ease: "easeIn" }
         }}
       >
-        <form action={formAction}>
+        <form action={formAction} className="text-primary">
           <Card>
             <CardHeader className="space-y-1">
               <CardTitle className="text-3xl font-bold">Fazer login</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Seu celular</Label>
-                <Input
+                <Label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                  Telefone Celular
+                </Label>
+                <MaskedInput
+                  mask={[
+                    '(',
+                    /[1-9]/,
+                    /\d/,
+                    ')',
+                    ' ',
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    '-',
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    /\d/
+                  ]}
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+                  placeholder="(XX) XXXXX-XXXX"
+                  guide={false}
                   id="phone_number"
                   name="phone_number"
                   type="phone_number"
-                  placeholder="(xx)xxxxx-xxxx"
                 />
                 <ZodErrors error={formState?.zodErrors?.phone_number} />
               </div>

@@ -9,7 +9,7 @@ import { FaUserFriends } from "react-icons/fa"
 const CardDish = forwardRef(({ dish }, ref) => {
   // dish.day_of_week
   return (
-    <Card ref={ref} className="w-full h-[165px] p-4 flex justify-between items-center border hover:border-1 hover:border-[#dbdad9] cursor-pointer">
+    <Card ref={ref} className="w-full h-[165px] p-4 flex justify-evenly items-center border hover:border-1 hover:border-[#dbdad9] cursor-pointer">
       <div className="space-y-2">
         <h2 className="text-md sm:text-lg font-medium text-[#3f3e3e]">{dish.title}</h2>
         <p className="text-muted-foreground text-sm sm:text-md text-[#3f3e3e]">

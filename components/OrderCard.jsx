@@ -7,26 +7,26 @@ const badges = (status) => {
   switch (status) {
     case "Pedido Enviado":
       return (
-        <Badge variant="default" className="bg-orange-500 text-white">
+        <Badge variant="default" className="bg-red-500 text-white">
           {status}
         </Badge>
       )
     case "Pedido Confirmado":
       return (
         <Badge variant="default" className="bg-yellow-500 text-white">
-          Pedido Saiu para Entrega
+          {status}
         </Badge>
       )
     case "Pedido Saiu para Entrega":
       return (
         <Badge variant="default" className="bg-blue-500 text-white">
-          Pedido Saiu para Entrega
+          {status}
         </Badge>
       )
     case "Pedido Entregue":
       return (
         <Badge variant="default" className="bg-green-500 text-white">
-          Pedido Entregue
+          {status}
         </Badge>
       )
   }
@@ -44,7 +44,7 @@ const OrderCard = ({ index, order }) => {
           return (
             <div key={index} className="mt-4 space-y-2">
               <div className="flex items-center space-x-2">
-                <Badge variant="secondary">{dish.quantity}</Badge>
+                <Badge variant="secondary">{dish.quantity}x</Badge>
                 <p className="text-sm">{dish.title}</p>
                 <p className="text-sm">{dish.payment_type}</p>
               </div>

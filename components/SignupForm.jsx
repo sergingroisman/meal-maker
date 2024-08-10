@@ -20,6 +20,8 @@ import { Input } from "@/components/ui/input"
 import { ZodErrors } from "@/components/custom/ZodErrors"
 import { ApiErrors } from "./custom/ApiErrors"
 import { SubmitButton } from "./custom/SubmitButton"
+import MaskedInput from "react-text-mask"
+import useDimensions from "./custom/useDimensions"
 
 const INITIAL_STATE = {
   data: null,
@@ -30,8 +32,10 @@ export function SignupForm() {
     registerUserAction,
     INITIAL_STATE
   )
+  const { isMobile } = useDimensions()
+
   return (
-    <div className={`w-full max-w-md ${isMobile && "pt-[50px]"}`}>
+    <div className={`w-full max-w-md ${!isMobile && "pt-[50px]"}`}>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{
@@ -39,7 +43,7 @@ export function SignupForm() {
           transition: { delay: 0.4, duration: 0.2, ease: "easeIn" }
         }}
       >
-        <form action={formAction}>
+        <form action={formAction} className="text-primary">
           <Card className="w-full">
             <CardHeader className="space-y-1">
               <CardTitle className="text-3xl font-bold">Criar conta</CardTitle>
@@ -56,12 +60,33 @@ export function SignupForm() {
                 <ZodErrors error={formState?.zodErrors?.name} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone_number">Telefone</Label>
-                <Input
+                <Label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                  Telefone Celular
+                </Label>
+                <MaskedInput
+                  mask={[
+                    '(',
+                    /[1-9]/,
+                    /\d/,
+                    ')',
+                    ' ',
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    '-',
+                    /\d/,
+                    /\d/,
+                    /\d/,
+                    /\d/
+                  ]}
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+                  placeholder="(XX) XXXXX-XXXX"
+                  guide={false}
                   id="phone_number"
                   name="phone_number"
                   type="phone_number"
-                  placeholder="(xx)xxxxx-xxxx"
                 />
                 <ZodErrors error={formState?.zodErrors?.phone_number} />
               </div>

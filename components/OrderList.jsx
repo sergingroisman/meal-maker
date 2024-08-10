@@ -21,7 +21,7 @@ const OrderList = ({ orders }) => {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {orders.map((order, index) => {
             return (
-              <OrderCard index={index} order={order} />
+              <OrderCard key={index} index={index} order={order} />
             )
           })}
         </div>

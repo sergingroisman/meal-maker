@@ -1,7 +1,6 @@
 "use client"
 
 import { Sheet, SheetTrigger, SheetContent, SheetTitle } from "@/components/ui/sheet"
-import { usePathname } from 'next/navigation'
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "./ui/checkbox"
@@ -9,26 +8,21 @@ import { useState } from "react"
 import { RiArrowLeftSLine } from "react-icons/ri"
 import VisuallyHidden from "./custom/VisuallyHidden"
 import CardDish from "./CardDish"
-import useStore from "@/store/useStore"
 import { formatPrice } from "@/lib/utils"
-import useDimensions from "./custom/useDimensions"
+
 import { FaMinus, FaPlus } from "react-icons/fa"
 
-const MobileAddItemSheet = ({ index_parent, item, accompaniments }) => {
+const MobileAddItemSheet = ({ index_parent, item, accompaniments, addItem, isMobile }) => {
+  const [isOpenAddItem, setIsOpenAddItem] = useState(false)
+  const [observation, setObservation] = useState("")
+  const [selectedAccompaniments, setSelectedAccompaniments] = useState({})
+  const [selectedQuantity, setSelectedQuantity] = useState(1)
+  
   if (!item) {
     return (
       <h1>Sem CARD</h1>
     )
   }
-
-  const addItem = useStore((state) => state.addItem)
-  const updateItem = useStore((state) => state.updateItem)
-  const { isMobile } = useDimensions()
-  const pathname = usePathname()
-  const [isOpenAddItem, setIsOpenAddItem] = useState(false)
-  const [observation, setObservation] = useState("")
-  const [selectedAccompaniments, setSelectedAccompaniments] = useState({});
-  const [selectedQuantity, setSelectedQuantity] = useState(1);
 
   const handleCheckboxChange = (id) => {
     setSelectedAccompaniments((prev) => ({
@@ -52,6 +46,7 @@ const MobileAddItemSheet = ({ index_parent, item, accompaniments }) => {
 
   const handleClose = () => {
     setIsOpenAddItem(false)
+    setSelectedQuantity(1)
     setSelectedAccompaniments({})
   }
 
@@ -59,24 +54,32 @@ const MobileAddItemSheet = ({ index_parent, item, accompaniments }) => {
     const selectedAccompanimentIds = Object.keys(selectedAccompaniments).filter(
       (id) => selectedAccompaniments[id]
     )
+    if (selectedAccompanimentIds.length > 0) {
+      addItem({
+        _id: item._id,
+        title: item.title,
+        price: item.price,
+        observation: observation,
+        quantity: selectedQuantity,
+        accompaniments: selectedAccompanimentIds.map((id) => ({
+          _id: id,
+          title: accompaniments.find((a) => a._id === id).title,
+        })),
+      })
+      handleClose()
 
-    addItem({
-      _id: item._id,
-      title: item.title,
-      price: item.price,
-      observation: observation,
-      quantity: selectedQuantity,
-      accompaniments: selectedAccompanimentIds.map((id) => ({
-        _id: id,
-        title: accompaniments.find((a) => a._id === id).title,
-      })),
-    })
-    handleClose()
+      // if(!isMobile) {
+
+      // }
+    }
   }
 
-  const handleUpdateItem = (id, newItem) => {
-    updateItem(id, newItem);
-  };
+  const isDisbledButton = () => {
+    const selectedAccompanimentIds = Object.keys(selectedAccompaniments).filter(
+      (id) => selectedAccompaniments[id]
+    )
+    return selectedAccompanimentIds.length === 0
+  }
 
   return (
     <div key={index_parent} className="">
@@ -155,12 +158,17 @@ const MobileAddItemSheet = ({ index_parent, item, accompaniments }) => {
                         +
                       </Button>
                     </div>
-                    <Button onClick={() => handleAddItem()} className="bg-accent w-full text-white">Adicionar</Button>
+                    <Button 
+                      onClick={() => handleAddItem()}
+                      className={`w-full text-white ${isDisbledButton() ? "bg-[#f37a83] bg-opacity-50 cursor-not-allowed" : "bg-accent"}`}
+                    >
+                        Adicionar
+                    </Button>
                     <span className="text-sm font-bold text-gray-700">{formatPrice(item.price * selectedQuantity)}</span>
                   </div>
                 ) : (
                     <div className="fixed bottom-0 flex items-center justify-between p-4 border-t bg-gray-50">
-                      <div className="flex items-center justify-between p-4 border-t gap-2">
+                      <div className="flex items-center justify-between border-t gap-2">
                         <div className="flex items-center space-x-2">
                           <Button variant="outline" className="px-4" onClick={handleDecrement}>
                             {selectedQuantity > 1 ? <FaMinus className="w-4 h-4" /> : (
@@ -174,7 +182,9 @@ const MobileAddItemSheet = ({ index_parent, item, accompaniments }) => {
                             <FaPlus className="w-4 h-4" />
                           </Button>
                         </div>
-                        <Button onClick={() => handleAddItem()} className="bg-accent text-white px-6 py-2 flex items-center space-x-2">
+                        <Button 
+                          onClick={() => handleAddItem()}
+                          className={`text-white py-2 flex items-center space-x-2 ${isDisbledButton() ? "bg-[#f37a83] bg-opacity-50 cursor-not-allowed" : "bg-accent"}`}>
                           <span>Adicionar</span>
                           <span>{formatPrice(item.price * selectedQuantity)}</span>
                         </Button>

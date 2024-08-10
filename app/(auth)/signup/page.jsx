@@ -1,3 +1,5 @@
+"use server"
+
 import { SignupForm } from "@/components/SignupForm"
 
 const SingUpRoute = () => {

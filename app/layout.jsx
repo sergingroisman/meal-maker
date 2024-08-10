@@ -5,6 +5,8 @@ import "./globals.css"
 import Header from "@/components/Header"
 import PageTransition from "@/components/PageTransition"
 import MobileTabBar from "@/components/MobileTabBar"
+import Loading from "./loading"
+import { Suspense } from "react"
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -21,8 +23,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={outfit.variable}>
-        <Header />
-        <PageTransition>{children}</PageTransition>
+        {/* <Header /> */}
+        <Suspense fallback={<Loading />}>
+          <PageTransition>{children}</PageTransition>
+        </Suspense>
         {/* mobile nav */}
         <div className="xl:hidden">
           <MobileTabBar />

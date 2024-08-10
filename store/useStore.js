@@ -5,6 +5,7 @@ export const initialState = {
   total: 0.0,
   items: [],
   payment_type: "",
+  has_address: false,
 }
 
 function calcularPrecoTotal(items, quantity) {
@@ -45,7 +46,7 @@ const useStore = create((set) => ({
           quantityTotal,
         },
       }
-      console.log('Estado após adicionar items:', newState) // Log do estado
+      console.log('Estado após adicionar items:', newState)
       return newState
     }),
 
@@ -91,6 +92,18 @@ const useStore = create((set) => ({
         data: {
           ...state.data,
           payment_type: type,
+        },
+      }
+      console.log('Estado após definir tipo do pagamento:', newState)
+      return newState
+    }),
+
+  setHasAddress: (value) =>
+    set((state) => {
+      const newState = {
+        data: {
+          ...state.data,
+          has_address: value,
         },
       }
       console.log('Estado após definir tipo do pagamento:', newState)

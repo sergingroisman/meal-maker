@@ -1,26 +1,16 @@
 // components
 import Link from "next/link"
 import Nav from "./Nav"
-import { Button } from "./ui/button"
 import { fetchBff, getAuthToken } from "@/services/api"
 import { TbLogout2 } from "react-icons/tb"
 import DesktopBagSheet from "./DesktopBagSheet"
+import { FaUserEdit } from "react-icons/fa"
+import { PiSignInBold } from "react-icons/pi"
+import { signOut } from "next-auth/react"
+import LoggedInHeader from "./LoggedInHeader"
 
 const Header = async () => {
   const partner = await fetchBff()
-  
-  const signSignOutBtn = async () => {
-    const { token } = await getAuthToken()
-    if (!token) {
-      return
-    }
-
-    return (
-      <Link href="/signout">
-        <TbLogout2 className="h-6 w-6 text-accent" />
-      </Link>
-    )
-  }
 
   return (
     <header className="py-8 text-primary border-b border-muted">
@@ -35,7 +25,7 @@ const Header = async () => {
         {/* desktop nav & sign-in button */}
         <div className="hidden xl:flex items-center gap-8">
           <Nav />
-          {signSignOutBtn(true)}
+          <LoggedInHeader />
           <DesktopBagSheet />
         </div>
       </div>

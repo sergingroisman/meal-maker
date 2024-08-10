@@ -1,6 +1,11 @@
+import Header from "@/components/Header"
+
 function NotFound() {
   return (
-    <div>not-found</div>
+    <div>
+      <Header />
+      not-found
+    </div>
   )
 }
 
