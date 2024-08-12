@@ -384,7 +384,118 @@ export const fetchAccompaniments = async (options = {}) => {
         "Content-Type": "application/json",
         ...options.headers,
       },
+      cache: 'no-store',
       ...options,
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(JSON.stringify(errorData))
+    }
+
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.error("Error retrieving data:", error)
+    const errorData = JSON.parse(error)
+    return {
+      error: {
+        status: errorData?.status,
+        message: errorData?.message,
+      },
+    }
+  }
+}
+
+export const createAccompaniments = async (body) => {
+  try {
+    const auth_token = await getAuthToken()
+
+    const response = await fetch(`${BASE_URL}/create-accompaniments`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": auth_token,
+      },
+      body: JSON.stringify({
+        accompaniments: [
+          {
+            title: body.title,
+            small_description: body.smallDescription,
+          }
+        ]
+      }),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(JSON.stringify(errorData))
+    }
+
+    const data = await response.json()
+    return { data }
+  } catch (error) {
+    console.error("Error retrieving data:", error)
+    const errorData = JSON.parse(error)
+    return {
+      error: {
+        status: errorData?.status,
+        message: errorData?.message,
+      },
+    }
+  }
+}
+
+export const updateAccompaniments = async (acc_id, body) => {
+  try {
+    const auth_token = await getAuthToken()
+
+    const response = await fetch(`${BASE_URL}/update-accompaniments`, {
+      method: 'PATCH',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": auth_token,
+      },
+      body: JSON.stringify({
+        accompaniments: [
+          {
+            "_id": acc_id,
+            title: body.title,
+            small_description: body.smallDescription,
+          }
+        ]
+      }),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(JSON.stringify(errorData))
+    }
+
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.error("Error retrieving data:", error)
+    const errorData = JSON.parse(error)
+    return {
+      error: {
+        status: errorData?.status,
+        message: errorData?.message,
+      },
+    }
+  }
+}
+
+export const deleteAccompaniment = async (acc_id) => {
+  try {
+    const auth_token = await getAuthToken()
+
+    const response = await fetch(`${BASE_URL}/delete-accompaniment/${acc_id}`, {
+      method: 'DELETE',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": auth_token,
+      },
     })
 
     if (!response.ok) {

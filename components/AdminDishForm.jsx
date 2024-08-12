@@ -17,7 +17,7 @@ import { BsThreeDotsVertical } from "react-icons/bs"
 import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 
-const AdminDishForm = ({ dishes }) => {
+const AdminDishForm = ({ dishes, onSubmitSuccess }) => {
   const [isOpenModal, setIsOpenModal] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isOpenRemoveItem, setIsOpenModalRemoveItem] = useState(false)
@@ -109,7 +109,7 @@ const AdminDishForm = ({ dishes }) => {
       handleEditItemChange(null)
       handleClose()
       setIsLoading(false)
-      router.push('/cardapios')
+      onSubmitSuccess()
     } catch (error) {
       console.log(error)
       setIsLoading(false)
@@ -138,6 +138,7 @@ const AdminDishForm = ({ dishes }) => {
   const handleRemoveItem = async () => {
     deleteDishAction(itemToRemove._id)
     setIsOpenModalRemoveItem(false)
+    onSubmitSuccess()
   }
 
   const handlePriceChange = (event) => {

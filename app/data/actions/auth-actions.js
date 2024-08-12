@@ -5,7 +5,7 @@ import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import parsePhoneNumber from "libphonenumber-js"
 
-import { createDish, deleteDish, signIn, signUp, updateDish, updateImgDish, updateUserAddress } from "@/services/api"
+import { createAccompaniments, createDish, deleteAccompaniment, deleteDish, signIn, signUp, updateAccompaniments, updateDish, updateImgDish, updateUserAddress } from "@/services/api"
 
 const config = {
   maxAge: 60 * 60 * 24 * 7, // 1 semana
@@ -312,6 +312,107 @@ export async function deleteDishAction(dish_id) {
   try {
     if (!dish_id) return
     await deleteDish(dish_id)
+  } catch (error) {
+    return {
+      ApiErrors: error,
+      zodErrors: null,
+      message: "Failed to Delete.",
+    }
+  }
+}
+
+const schemaCreateAccompaniments = z.object({
+  title: z.string().min(3).max(40, {
+    message: "O nome deve conter entre 3 e 40 caracteres.",
+  }),
+  smallDescription: z.string().max(100, {
+    message: "A descrição deve ter no máximo 100 caracteres.",
+  }),
+})
+
+export async function createAccompanimentsAction(accData) {
+  const validatedFields = schemaCreateAccompaniments.safeParse({
+    title: accData.title,
+    smallDescription: accData.smallDescription,
+  })
+
+  if (!validatedFields.success) {
+    return {
+      zodErrors: validatedFields.error.flatten().fieldErrors,
+      ApiErrors: null,
+      message: "Missing Fields. Failed to Register.",
+    }
+  }
+
+  const responseData = await createAccompaniments({ ...validatedFields.data })
+
+  if (!responseData) {
+    return {
+      ApiErrors: null,
+      zodErrors: null,
+      message: "Ops! Something went wrong. Please try again.",
+    }
+  }
+
+  if (responseData.error) {
+    return {
+      ApiErrors: responseData.error,
+      zodErrors: null,
+      message: "Failed to Register.",
+    }
+  }
+
+  return {
+    ApiErrors: null,
+    zodErrors: null,
+    message: "Dish created successfully!",
+  }
+}
+
+export async function updateAccompanimentsAction(acc_id, accData) {
+  const validatedFields = schemaCreateAccompaniments.safeParse({
+    title: accData.title,
+    smallDescription: accData.smallDescription,
+  })
+
+  if (!validatedFields.success) {
+    return {
+      zodErrors: validatedFields.error.flatten().fieldErrors,
+      ApiErrors: null,
+      message: "Missing Fields. Failed to Register.",
+    }
+  }
+  
+  const responseData = await updateAccompaniments(acc_id, { ...validatedFields.data })
+  // const responseData = await updateAccompaniments(acc_id, { ...validatedFields.data, active: dishData.active })
+
+  if (!responseData) {
+    return {
+      ApiErrors: null,
+      zodErrors: null,
+      message: "Ops! Something went wrong. Please try again.",
+    }
+  }
+
+  if (responseData.error) {
+    return {
+      ApiErrors: responseData.error,
+      zodErrors: null,
+      message: "Failed to Register.",
+    }
+  }
+
+  return {
+    ApiErrors: null,
+    zodErrors: null,
+    message: "Acompanhamento criado com sucesso",
+  }
+}
+
+export async function deleteAccompanimentAction(acc_id) {
+  try {
+    if (!acc_id) return
+    await deleteAccompaniment(acc_id)
   } catch (error) {
     return {
       ApiErrors: error,

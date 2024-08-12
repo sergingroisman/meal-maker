@@ -28,13 +28,13 @@ const CardapiosPage = () => {
   }
 
   useEffect(() => {
-    fetchData() // Chama a função imediatamente ao montar o componente
+    fetchData()
 
     const interval = setInterval(() => {
-      fetchData() // Chama a função a cada 1 minuto
-    }, 60000) // 60000 ms = 1 minuto
+      fetchData()
+    }, 30000)
 
-    return () => clearInterval(interval) // Limpa o intervalo ao desmontar
+    return () => clearInterval(interval)
   }, [])
 
   if (loading) {
@@ -48,7 +48,7 @@ const CardapiosPage = () => {
   return (
     <div className="ml-64">
       <main className="flex-1 flex flex-col">
-        <AdminDishForm dishes={dishes} />
+        <AdminDishForm dishes={dishes} onSubmitSuccess={fetchData} />
       </main>
     </div>
   )
