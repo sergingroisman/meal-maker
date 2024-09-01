@@ -15,11 +15,10 @@ import VisuallyHidden from "./custom/VisuallyHidden"
 import useStore from "@/store/useStore"
 // import IF from './custom/if'
 
-const MobilePaymentSheet = () => {
+const MobilePaymentSheet = ({ isOpenPayment, setIsOpenPayment }) => {
   const data = useStore((state) => state.data)
   const setPaymentType = useStore((state) => state.setPaymentType)
   const pathname = usePathname()
-  const [isOpenPayment, setIsOpenPayment] = useState(false)
 
   const handleClose = (id, newItem) => {
     setIsOpenPayment(false)

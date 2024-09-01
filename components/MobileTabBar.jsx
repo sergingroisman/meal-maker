@@ -55,6 +55,7 @@ const MobileTabBar = () => {
   const resetState = useStore((state) => state.resetState)
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
+  const [isOpenPayment, setIsOpenPayment] = useState(false)
   const { isLoggedIn } = useSession()
   const router = useRouter()
 
@@ -65,6 +66,8 @@ const MobileTabBar = () => {
         setIsOpen(false)
         resetState()
         router.push("/pedidos")
+      } else {
+        setIsOpenPayment(true);
       }
     } catch (error) {
       console.log(error)      
@@ -94,9 +97,9 @@ const MobileTabBar = () => {
           aria-disabled={pending}
           disabled={pending}
           onClick={() => handleSendOrder()}
-          className={`w-full text-white ${isDisbledButton() ? "bg-[#f37a83] bg-opacity-50 cursor-not-allowed hover:bg-[#f37a83]" : "bg-accent"}`}
+          className={`w-full text-white bg-accent`}
         >
-          {pending ? <Loader text={"Loading"} /> : "Fazer pedido"}
+          {pending ? <Loader text={"Loading"} /> : isDisbledButton() ? "Forma de pagamento" : "Fazer pedido"}
         </Button>
       </div>
     )
@@ -170,7 +173,7 @@ const MobileTabBar = () => {
                     </div>
                   </div>
                 </div>
-                <MobilePaymentSheet />
+                <MobilePaymentSheet isOpenPayment={isOpenPayment} setIsOpenPayment={setIsOpenPayment} />
                 <div className="p-4">
                   {sheetFooterButtons()}
                 </div>
@@ -178,7 +181,7 @@ const MobileTabBar = () => {
             </Sheet>
           </IF>
 
-          <div className="flex justify-between px-4 py-2">
+          <div className="flex justify-evenly py-2">
             {links.map((link, index) => (
               <Link
                 key={index}

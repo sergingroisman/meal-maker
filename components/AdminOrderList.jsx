@@ -67,17 +67,17 @@ export async function generateMetadata({ params }) {
   }
 }
 
-const AdminOrderList = ({ orders }) => {
+const AdminOrderList = ({ orders, fetchData }) => {
   const data = backofficeStore((state) => state.data)
   const addOrders = backofficeStore((state) => state.addOrders)
   const updateOrders = backofficeStore((state) => state.updateOrders)
   const [currentOrder, setCurrentOrder] = useState(orders[0])
-  const router = useRouter()
   const [isVisible, setIsVisible] = useState(true)
   const [shouldShow, setShouldShow] = useState(false)
 
   useEffect(() => {
     addOrders(orders)
+    setCurrentOrder(orders[0])
   }, [orders])
 
   const printDiv = (idText) => {
@@ -122,6 +122,7 @@ const AdminOrderList = ({ orders }) => {
       const statusStr = getStatusString(status_id)
       await updateOrderStatus(currentOrder._id, status_id)
       updateOrders(currentOrder._id, { ...currentOrder, status: statusStr })
+      fetchData()
     } catch (error) {
       console.log(error)
     }

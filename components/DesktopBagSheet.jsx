@@ -15,6 +15,11 @@ import { useState } from 'react'
 import { Badge } from './ui/badge'
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
+import { MdOutlineDeliveryDining } from "react-icons/md"
+import { BiDish } from "react-icons/bi"
+import IF from "./custom/if"
+import { RadioGroup, RadioGroupItem } from "./ui/radio-group"
+import { Label } from "./ui/label"
 
 function Loader({ text }) {
   return (
@@ -25,28 +30,35 @@ function Loader({ text }) {
   )
 }
 
-const DesktopBagSheet = () => {
+const DesktopBagSheet = ({ isAdmin = false }) => {
   const [pending, setPending] = useState(false)
   const data = useStore((state) => state.data)
   const resetState = useStore((state) => state.resetState)
   const [isOpen, setIsOpen] = useState(false)
   const { isLoggedIn } = useSession()
   const router = useRouter()
+  const [radioValue, setRadioValue] = useState("entrega")
+  const [isOpenPayment, setIsOpenPayment] = useState(false)
 
   const handleSendOrder = async () => {
     setPending(true)
     try {
-      await createOrdersByUser(data)
-      setIsOpen(false)
-      resetState()
-      setPending(false)
-      router.push("/pedidos")
+      if (isDisbledButton) {
+        await createOrdersByUser({ ...data, delivery_type: radioValue })
+        if (isAdmin === false) {
+          router.push("/pedidos")
+        }
+        setPending(false)
+        setIsOpen(false)
+        resetState()
+      } else {
+        setIsOpenPayment(true);
+      }
     } catch (error) {
       setPending(false)
       console.log(error)
     }
   }
-
 
   const isDisbledButton = () => {
     return data.payment_type === "" || data.hasAddress === false
@@ -75,6 +87,10 @@ const DesktopBagSheet = () => {
         </Button>
       </div>
     )
+  }
+
+  const handleRadioValueChange = (newValue) => {
+    setRadioValue(newValue)
   }
 
   return (
@@ -136,8 +152,34 @@ const DesktopBagSheet = () => {
                 <span>{formatPrice(data.total)}</span>
               </div>
             </div>
-
-            <MobilePaymentSheet />
+            <IF condition={isAdmin && data.quantityTotal > 0}>
+              <div className="space-y-2 p-4">
+                <label htmlFor="comment" className="text-sm text-gray-700">
+                  Pedido é para...
+                </label>
+                <RadioGroup value={radioValue} onValueChange={handleRadioValueChange}>
+                  <div className="flex flex-col space-y-4">
+                    <div className="flex items-center">
+                      <RadioGroupItem value="mesa" id="mesa" />
+                      <Label htmlFor="mesa" className="flex items-center space-x-2">
+                        <BiDish className="h-5 w-5" /> {/* Ajuste o tamanho do ícone conforme necessário */}
+                        <span> Mesa</span>
+                      </Label>
+                    </div>
+                    <div className="flex items-center">
+                      <RadioGroupItem value="entrega" id="entrega" />
+                      <Label htmlFor="entrega" className="flex items-center space-x-2">
+                        <MdOutlineDeliveryDining className="h-5 w-5" />
+                        <span> Entrega</span>
+                      </Label>
+                    </div>
+                  </div>
+                </RadioGroup>
+              </div>
+            </IF>
+            <IF condition={data.quantityTotal > 0}>
+              <MobilePaymentSheet isOpenPayment={isOpenPayment} setIsOpenPayment={setIsOpenPayment} />
+            </IF>
             {sheetFooterButtons()}
           </CardContent>
         </Card>

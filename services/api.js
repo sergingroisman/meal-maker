@@ -44,6 +44,7 @@ export const fetchOrdersByUser = async (options = {}) => {
         "Content-Type": "application/json",
         ...options.headers,
       },
+      cache: 'no-store',
       ...options,
     })
 
@@ -82,6 +83,7 @@ export const createOrdersByUser = async (body) => {
         total: body.total,
         dishes: body.items,
         payment_type: body.payment_type,
+        delivery_type: body.delivery_type,
       }),
     })
 
@@ -286,7 +288,7 @@ export const updateUserAddress = async (body) => {
 export const fetchOrdersByPartner = async (options = {}) => {
   try {
     const partner_id = 1
-    const response = await fetch(`${BASE_URL}/get-orders-by-partner/${partner_id}`, {
+    const response = await fetch(`${BASE_URL}/get-orders-by-partner/${partner_id}${options.feed ? "/?feed=true" : ""}`, {
       method: 'GET',
       headers: {
         "Content-Type": "application/json",
@@ -491,6 +493,138 @@ export const deleteAccompaniment = async (acc_id) => {
     const auth_token = await getAuthToken()
 
     const response = await fetch(`${BASE_URL}/delete-accompaniment/${acc_id}`, {
+      method: 'DELETE',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": auth_token,
+      },
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(JSON.stringify(errorData))
+    }
+
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.error("Error retrieving data:", error)
+    const errorData = JSON.parse(error)
+    return {
+      error: {
+        status: errorData?.status,
+        message: errorData?.message,
+      },
+    }
+  }
+}
+
+export const fetchDeliveries = async (options = {}) => {
+  try {
+    const response = await fetch(`${BASE_URL}/get-deliveries`, {
+      method: 'GET',
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+      cache: 'no-store',
+      ...options,
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(JSON.stringify(errorData))
+    }
+
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.error("Error retrieving data:", error)
+    const errorData = JSON.parse(error)
+    return {
+      error: {
+        status: errorData?.status,
+        message: errorData?.message,
+      },
+    }
+  }
+}
+
+export const createDelivery = async (body) => {
+  try {
+    const auth_token = await getAuthToken()
+
+    const response = await fetch(`${BASE_URL}/create-delivery`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": auth_token,
+      },
+      body: JSON.stringify({
+        name: body.name,
+        phone_number: body.phoneNumber,
+      }),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(JSON.stringify(errorData))
+    }
+
+    const data = await response.json()
+    return { data }
+  } catch (error) {
+    console.error("Error retrieving data:", error)
+    const errorData = JSON.parse(error)
+    return {
+      error: {
+        status: errorData?.status,
+        message: errorData?.message,
+      },
+    }
+  }
+}
+
+export const updateDelivery = async (delivery_id, body) => {
+  try {
+    const auth_token = await getAuthToken()
+
+    const response = await fetch(`${BASE_URL}/update-delivery/${delivery_id}`, {
+      method: 'PATCH',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": auth_token,
+      },
+      body: JSON.stringify({
+        name: body.name,
+        phone_number: body.phoneNumber,
+      }),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(JSON.stringify(errorData))
+    }
+
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.error("Error retrieving data:", error)
+    const errorData = JSON.parse(error)
+    return {
+      error: {
+        status: errorData?.status,
+        message: errorData?.message,
+      },
+    }
+  }
+}
+
+export const deleteDelivery = async (delivery_id) => {
+  try {
+    const auth_token = await getAuthToken()
+
+    const response = await fetch(`${BASE_URL}/delete-delivery/${delivery_id}`, {
       method: 'DELETE',
       headers: {
         "Content-Type": "application/json",

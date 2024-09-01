@@ -5,7 +5,7 @@ import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import parsePhoneNumber from "libphonenumber-js"
 
-import { createAccompaniments, createDish, deleteAccompaniment, deleteDish, signIn, signUp, updateAccompaniments, updateDish, updateImgDish, updateUserAddress } from "@/services/api"
+import { createAccompaniments, createDelivery, createDish, deleteAccompaniment, deleteDelivery, deleteDish, signIn, signUp, updateAccompaniments, updateDelivery, updateDish, updateImgDish, updateUserAddress } from "@/services/api"
 
 const config = {
   maxAge: 60 * 60 * 24 * 7, // 1 semana
@@ -413,6 +413,104 @@ export async function deleteAccompanimentAction(acc_id) {
   try {
     if (!acc_id) return
     await deleteAccompaniment(acc_id)
+  } catch (error) {
+    return {
+      ApiErrors: error,
+      zodErrors: null,
+      message: "Failed to Delete.",
+    }
+  }
+}
+
+const schemaCreateDelivery = z.object({
+  name: z.string().min(3).max(40, {
+    message: "O nome deve conter entre 3 e 40 caracteres.",
+  }),
+  phoneNumber: zPhoneNumber
+})
+
+export async function createDeliveryAction(deliveryData) {
+  const validatedFields = schemaCreateDelivery.safeParse({
+    name: deliveryData.name,
+    phoneNumber: deliveryData.phoneNumber,
+  })
+
+  if (!validatedFields.success) {
+    return {
+      zodErrors: validatedFields.error.flatten().fieldErrors,
+      ApiErrors: null,
+      message: "Missing Fields. Failed to Register.",
+    }
+  }
+
+  const responseData = await createDelivery({ ...validatedFields.data })
+
+  if (!responseData) {
+    return {
+      ApiErrors: null,
+      zodErrors: null,
+      message: "Ops! Something went wrong. Please try again.",
+    }
+  }
+
+  if (responseData.error) {
+    return {
+      ApiErrors: responseData.error,
+      zodErrors: null,
+      message: "Failed to Register.",
+    }
+  }
+
+  return {
+    ApiErrors: null,
+    zodErrors: null,
+    message: "Dish created successfully!",
+  }
+}
+
+export async function updateDeliveryAction(delivery_id, deliveryData) {
+  const validatedFields = schemaCreateDelivery.safeParse({
+    name: deliveryData.name,
+    phoneNumber: deliveryData.phoneNumber,
+  })
+
+  if (!validatedFields.success) {
+    return {
+      zodErrors: validatedFields.error.flatten().fieldErrors,
+      ApiErrors: null,
+      message: "Missing Fields. Failed to Register.",
+    }
+  }
+
+  const responseData = await updateDelivery(delivery_id, { ...validatedFields.data })
+
+  if (!responseData) {
+    return {
+      ApiErrors: null,
+      zodErrors: null,
+      message: "Ops! Something went wrong. Please try again.",
+    }
+  }
+
+  if (responseData.error) {
+    return {
+      ApiErrors: responseData.error,
+      zodErrors: null,
+      message: "Failed to Register.",
+    }
+  }
+
+  return {
+    ApiErrors: null,
+    zodErrors: null,
+    message: "Entregador criado com sucesso",
+  }
+}
+
+export async function deleteDeliveryAction(delivery_id) {
+  try {
+    if (!delivery_id) return
+    await deleteDelivery(delivery_id)
   } catch (error) {
     return {
       ApiErrors: error,

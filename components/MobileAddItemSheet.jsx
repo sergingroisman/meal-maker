@@ -67,10 +67,6 @@ const MobileAddItemSheet = ({ index_parent, item, accompaniments, addItem, isMob
         })),
       })
       handleClose()
-
-      // if(!isMobile) {
-
-      // }
     }
   }
 

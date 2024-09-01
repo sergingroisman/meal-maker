@@ -12,7 +12,7 @@ const BackofficePage = () => {
 
   const fetchData = async () => {
     try {
-      const data = await fetchOrdersByPartner()
+      const data = await fetchOrdersByPartner({ feed: true })
       if (!data) {
         notFound()
       }
@@ -25,14 +25,22 @@ const BackofficePage = () => {
   }
 
   useEffect(() => {
-    fetchData() // Chama a função imediatamente ao montar o componente
+    fetchData()
 
     const interval = setInterval(() => {
-      fetchData() // Chama a função a cada 1 minuto
-    }, 60000) // 60000 ms = 1 minuto
+      fetchData()
+    }, 60000)
 
-    return () => clearInterval(interval) // Limpa o intervalo ao desmontar
+    return () => clearInterval(interval)
   }, [])
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setStatus('Entregue');
+    }, 600000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   if (loading) {
     return <div>Carregando...</div>
@@ -45,7 +53,7 @@ const BackofficePage = () => {
   return (
     <div className="ml-64">
       <main className="flex-1 flex flex-col">
-        <AdminOrderList orders={orders} />
+        <AdminOrderList orders={orders} fetchData={fetchData} />
       </main>
     </div>
   )

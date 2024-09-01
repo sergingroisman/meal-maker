@@ -16,6 +16,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { BsThreeDotsVertical } from "react-icons/bs"
 import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 const AdminDishForm = ({ dishes, onSubmitSuccess }) => {
   const [isOpenModal, setIsOpenModal] = useState(false)
@@ -300,13 +301,13 @@ const AdminDishForm = ({ dishes, onSubmitSuccess }) => {
                 return (
                   <TableRow key={index}>
                     <TableCell>
-                      <img
+                      <Image
                         src={dish.img_url}
                         alt={dish.description}
-                        className="w-12 h-12 rounded"
-                        width="50"
-                        height="50"
-                        style={{ aspectRatio: "50/50", objectFit: "cover" }}
+                        width={60}
+                        height={60}
+                        className="w-[60px] h-[60px] rounded"
+                        style={{ objectFit: 'cover' }}
                       />
                     </TableCell>
                     <TableCell>{dish.title}</TableCell>

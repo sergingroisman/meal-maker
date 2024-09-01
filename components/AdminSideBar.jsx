@@ -2,12 +2,13 @@
 
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
-import { PiNotepad } from "react-icons/pi"
+import { PiCookingPotBold, PiNotepad } from "react-icons/pi"
 import { BiFoodMenu } from "react-icons/bi"
 import { CiCircleList } from "react-icons/ci"
 import { TbLogout2 } from "react-icons/tb"
 import backofficeStore from "@/store/backofficeStore"
 import { usePathname } from "next/navigation"
+import { MdOutlineDeliveryDining } from "react-icons/md"
 
 const AdminSideBar = () => {
   const pathname = usePathname()
@@ -35,6 +36,14 @@ const AdminSideBar = () => {
         <Link href="/acompanhamentos" className={`block p-2 rounded-md ${pathname === "/acompanhamentos" && "bg-gray-300"}`} prefetch={false}>
           <CiCircleList className="w-5 h-5 inline-block mr-2" />
           Acompanhamentos
+        </Link>
+        <Link href="/cozinha" className={`block p-2 rounded-md ${pathname === "/cozinha" && "bg-gray-300"}`} prefetch={false}>
+          <PiCookingPotBold className="w-5 h-5 inline-block mr-2" />
+          Cozinha
+        </Link>
+        <Link href="/entregadores" className={`block p-2 rounded-md ${pathname === "/entregadores" && "bg-gray-300"}`} prefetch={false}>
+          <MdOutlineDeliveryDining className="w-5 h-5 inline-block mr-2" />
+          Entregadores
         </Link>
         <Link href="#" className="block p-2 rounded-md" prefetch={false}>
           <TbLogout2 className="w-5 h-5 inline-block mr-2" />
