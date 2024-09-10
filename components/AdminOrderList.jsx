@@ -18,6 +18,8 @@ import { useRouter } from 'next/navigation'
 import { updateOrderStatus } from "@/services/api"
 import backofficeStore from "@/store/backofficeStore"
 import Countdown from "./Countdown"
+import { MdOutlineDeliveryDining } from "react-icons/md"
+import { BiDish } from "react-icons/bi"
 
 const badges = (status) => {
   switch (status) {
@@ -67,13 +69,12 @@ export async function generateMetadata({ params }) {
   }
 }
 
-const AdminOrderList = ({ orders, fetchData }) => {
+const AdminOrderList = ({ orders, fetchData, deliveries }) => {
   const data = backofficeStore((state) => state.data)
   const addOrders = backofficeStore((state) => state.addOrders)
   const updateOrders = backofficeStore((state) => state.updateOrders)
   const [currentOrder, setCurrentOrder] = useState(orders[0])
   const [isVisible, setIsVisible] = useState(true)
-  const [shouldShow, setShouldShow] = useState(false)
 
   useEffect(() => {
     addOrders(orders)
@@ -96,10 +97,53 @@ const AdminOrderList = ({ orders, fetchData }) => {
 
     if (iframeDoc) {
       iframeDoc.open()
-      iframeDoc.write("<html><head><title>" + document.title + "</title></head><body>")
-      iframeDoc.write("<h1>" + document.title + "</h1>")
-      iframeDoc.write(printEle.innerHTML || "")
-      iframeDoc.write("</body></html>")
+      iframeDoc.write(`
+        <html>
+          <head>
+            <title>Impressão Comanda</title>
+            <style>
+              @media print {
+                @page {
+                  size: 58mm auto; /* Largura fixa de 58mm, altura ajustável ao conteúdo */
+                  margin: 0; /* Remover margens para que ocupe toda a área */
+                }
+                body {
+                  top: 0;
+                  margin: 0;
+                  padding: 0;
+                  display: flex;
+                  justify-content: center;
+                  align-items: left;
+                  height: 100vh;
+                }
+                .print-area {
+                  width: 58mm;
+                  font-size: 8px;
+                  font-family: Arial, sans-serif;
+                  align-items: left;
+                }
+                table {
+                  width: 100%;
+                  font-size: 10px;
+                }
+                table, th, td {
+                  border-collapse: collapse;
+                  border: 1px solid black;
+                }
+                th, td {
+                  padding: 4px;
+                  text-align: center;
+                }
+              }
+            </style
+          </head>
+          <body>
+            <div class="print-area">
+              ${printEle.innerHTML || ""}
+            </div>
+          </body>
+        </html>
+      `)
       iframeDoc.close()
 
       iframe.contentWindow?.focus()
@@ -117,16 +161,165 @@ const AdminOrderList = ({ orders, fetchData }) => {
     }, 500)
   }
 
-  const handlerUpdateOrderStatus = async (status_id) => {
+  const handlerUpdateOrderStatus = async (status_id, delivery_id) => {
     try {
       const statusStr = getStatusString(status_id)
-      await updateOrderStatus(currentOrder._id, status_id)
+      if (status_id === 2 & delivery_id) {
+        await updateOrderStatus(currentOrder._id, status_id, delivery_id)
+      } else {
+        await updateOrderStatus(currentOrder._id, status_id)
+      }
       updateOrders(currentOrder._id, { ...currentOrder, status: statusStr })
       fetchData()
     } catch (error) {
       console.log(error)
     }
   }
+
+  const btnChangeStatus = (status, order) => {
+    switch (status) {
+      case "Pedido Enviado":
+        return (
+          <Button className="border border-yellow-500 bg-transparent text-yellow-500 hover:bg-yellow-500 hover:text-white">
+            <LuRefreshCw className="h-5 w-5" />
+            <span className="pl-2" onClick={() => handlerUpdateOrderStatus(1)}>
+              Alterar para "Pedido Confirmado"
+            </span>
+          </Button>
+        )
+      case "Pedido Confirmado":
+        return (
+          order.delivery_type === "entrega" || order.delivery_type === "" ? (
+            <div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button className="border border-blue-500 bg-transparent text-blue-500 hover:bg-blue-500 hover:text-white">
+                    Alterar para "Pedido Saiu para Entrega"
+                    <FaCaretDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                  <DropdownMenuLabel>Escolha o Entregador</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    {deliveries.map((delivery) => (
+                      <DropdownMenuItem key={delivery._id} onClick={() => handlerUpdateOrderStatus(2, delivery._id)}>
+                        <span
+                          className=""
+                        >
+                          {delivery.name}
+                        </span>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ) : (
+            <div>
+              <Button className="border border-blue-500 bg-transparent text-blue-500 hover:bg-blue-500 hover:text-white">
+                <LuRefreshCw className="h-5 w-5" />
+                <span className="pl-2" onClick={() => handlerUpdateOrderStatus(2)}>
+                  Alterar para "Pedido Confirmado"
+                </span>
+              </Button>
+            </div>
+          )
+        )
+      case "Pedido Saiu para Entrega":
+        return (
+          <Button className="border border-green-500 bg-transparent text-green-500 hover:bg-green-500 hover:text-white">
+            <LuRefreshCw className="h-5 w-5" />
+            <span className="pl-2" onClick={() => handlerUpdateOrderStatus(3)}>
+              Alterar para "Pedido Entregue"
+            </span>
+          </Button>
+        )
+    }
+  }
+
+  const ComandaTemplate = ({ currentOrder }) => {
+    if (!currentOrder) return null;
+    return (
+      <div className="p-5 max-w-[58mm] mx-auto text-xs leading-relaxed">
+        {/* <hr className="my-4 border-gray-300" /> */}
+
+        {/* Endereço do cliente */}
+        <h2 className="text-sm font-semibold">Endereço do Cliente</h2>
+        <p><strong>Rua:</strong> {currentOrder.user.address.street}</p>
+        <p><strong>Número:</strong> {currentOrder.user.address.number}</p>
+        <p><strong>Cidade:</strong> {currentOrder.user.address.city}</p>
+        <p><strong>CEP:</strong> {currentOrder.user.address.cep}</p>
+        <p><strong>Bairro:</strong> {currentOrder.user.address.state}</p>
+        <p><strong>Complemento:</strong> {currentOrder.user.address.complement}</p>
+        <hr className="my-4 border-gray-300" />
+
+        <h2 className="text-sm font-semibold">Informações do Pedido</h2>
+        <p><strong>Tipo do pagamento:</strong> {currentOrder.payment_type}</p>
+        {currentOrder.dishes && currentOrder.dishes.map((dish, index) => (
+          <div key={index} className="mt-4">
+            <p className="font-semibold">{dish.quantity}x {dish.title} - {dish.payment_type} {formatPrice(dish.price)}</p>
+
+            {/* Acompanhamentos */}
+            {dish.accompaniments && dish.accompaniments.length > 0 && (
+              <div className="mt-2">
+                <p className="text-xs">Acompanhamentos:</p>
+                <ul className="list-none pl-4">
+                  {dish.accompaniments.map((accompaniment, index) => (
+                    <li key={index} className="relative before:content-['•'] before:text-orange-500 before:absolute before:left-[-1rem] text-xs">
+                      {accompaniment.title}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Observações */}
+            {dish.observation && (
+              <div className="mt-2">
+                <p className="text-xs"><strong>Observação:</strong> {dish.observation}</p>
+              </div>
+            )}
+          </div>
+        ))}
+        
+        <hr className="my-4 border-gray-300" />
+
+        <IF condition={currentOrder.delivery._id !== 0}>
+          <div className="p-4 bg-gray-100 rounded-md gap-1">
+            <div className="bg-muted rounded-md">
+              <h2 className="text-sm font-semibold">Informações do entregador</h2>
+              <p className="text-sm text-muted-foreground"><strong>Nome: </strong>{currentOrder.delivery.name}</p>
+              <p className="text-sm text-muted-foreground"><strong>Número: </strong>{currentOrder.delivery.phone_number}</p>
+            </div>
+          </div>
+        </IF>
+
+        <hr className="my-4 border-gray-300" />
+        
+        <h2 className="text-sm font-semibold">Resumo do Pedido</h2>
+        <table className="table-auto w-full text-left text-xs">
+          <tbody>
+            <tr>
+              <td className="border px-2 py-1">Valor do Pedido:</td>
+              <td className="border px-2 py-1 text-right">{formatPrice(currentOrder.total)}</td>
+            </tr>
+            <tr>
+              <td className="border px-2 py-1">Taxa de Entrega:</td>
+              <td className="border px-2 py-1 text-right">R$ 0,00</td>
+            </tr>
+            <tr className="font-semibold">
+              <td className="border px-2 py-1">Valor Total:</td>
+              <td className="border px-2 py-1 text-right">{formatPrice(currentOrder.total)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
+
 
   return (
     <div className="flex-1 flex pt-4 gap-4 w-full">
@@ -141,21 +334,6 @@ const AdminOrderList = ({ orders, fetchData }) => {
                 </div>
               )}
               <h1 className="text-primary font-semibold text-lg">Pedidos agora</h1>
-              {/* <Button variant="ghost" size="icon" className="rounded-full hover:bg-gray-200">
-                <motion.div
-                  className="block"
-                  animate={{
-                    rotate: [120, 360],
-                  }}
-                  transition={{
-                    duration: 20,
-                    repeat: Infinity,
-                    repeatType: "reverse"
-                  }}
-                >
-                  <LuRefreshCw className="h-6 w-6" />
-                </motion.div>
-              </Button> */}
             </div>
           </div>
           {data.orders.length === 0 ? (
@@ -172,11 +350,18 @@ const AdminOrderList = ({ orders, fetchData }) => {
                       <span>
                         {order.user.name} - {" "}
                         <span className="text-sm">{formatPhoneNumber(order.user.phone_number)}</span>
+                        <div className="flex items-center pb-2">
+                          {order.delivery_type === "entrega" || order.delivery_type === "" ? (
+                            <MdOutlineDeliveryDining className="h-6 w-6" />
+                          ) : (
+                            <BiDish className="h-6 w-6" />
+                          )}
+                          <span>{order.delivery_type === "entrega" || order.delivery_type === "" ? "Entrega" : "De Mesa"}</span>
+                        </div>
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
                       {badges(order.status)}
-                      <Countdown targetDate={order.created_at} />
                     </div>
                     {order.dishes && order.dishes.map((dish, index) => {
                       return (
@@ -227,53 +412,28 @@ const AdminOrderList = ({ orders, fetchData }) => {
                           {formatPhoneNumber(currentOrder.user.phone_number)}
                         </Button>
                       </div>
+                      <div className="flex items-center">
+                        {currentOrder.delivery_type === "entrega" || currentOrder.delivery_type === "" ? (
+                          <MdOutlineDeliveryDining className="h-6 w-6" />
+                        ) : (
+                          <BiDish className="h-6 w-6" />
+                        )}
+                        <span>{currentOrder.delivery_type === "entrega" || currentOrder.delivery_type === "" ? "Entrega" : "De Mesa"}</span>
+                      </div>
                       <p className="text-muted-foreground">
                         {formatDate(currentOrder.created_at)}
                       </p>
                       <div className="flex space-x-2 mt-2">
                         {badges(currentOrder.status)}
                         <Badge variant="outline">Entrega prevista: {calculateDeliveryDate(currentOrder.created_at, 40)}</Badge>
-                        <div>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              {/* <Button variant="outline">Open</Button> */}
-                              <Button variant="outline">
-                                Atualizar Status
-                                <FaCaretDown className="ml-2 h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-56">
-                              <DropdownMenuLabel>Escolha o Status</DropdownMenuLabel>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuGroup>
-                                <DropdownMenuItem>
-                                  <span className="pr-2" onClick={() => handlerUpdateOrderStatus(1)}>
-                                    Pedido Confirmado
-                                  </span>
-                                  <span className="inline-flex rounded-full h-3 w-3 bg-yellow-500"></span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <span className="pr-2" onClick={() => handlerUpdateOrderStatus(2)}>
-                                    Pedido Saiu para Entrega
-                                  </span>
-                                  <span className="inline-flex rounded-full h-3 w-3 pl-2 bg-blue-500"></span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <span className="pr-2" onClick={() => handlerUpdateOrderStatus(3)}>
-                                    Pedido Entregue
-                                  </span>
-                                  <span className="inline-flex rounded-full h-3 w-3 pl-2 bg-green-500"></span>
-                                </DropdownMenuItem>
-                              </DropdownMenuGroup>
-                              <DropdownMenuSeparator />
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
                       </div>
+                    </div>
+                    <div>
+                      {btnChangeStatus(currentOrder.status, currentOrder)}
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent id="print" className="space-y-4">
+                <CardContent className="space-y-4">
                   <div className="p-4 bg-gray-100 rounded-md gap-1">
                     <div className="bg-muted rounded-md">
                       <h2 className="font-medium text-primary">Endereço:</h2>
@@ -319,6 +479,15 @@ const AdminOrderList = ({ orders, fetchData }) => {
                       )
                     })}
                   </div>
+                  <IF condition={currentOrder.delivery._id !== 0}>
+                    <div className="p-4 bg-gray-100 rounded-md gap-1">
+                      <div className="bg-muted rounded-md">
+                        <p className="font-bold text-gray-700">Informações do entregador</p>
+                        <p className="text-sm text-muted-foreground"><strong>Nome: </strong>{currentOrder.delivery.name}</p>
+                        <p className="text-sm text-muted-foreground"><strong>Número: </strong>{currentOrder.delivery.phone_number}</p>
+                      </div>
+                    </div>
+                  </IF>
                   <div className="space-y-2">
                     <div className="flex justify-between border-t border-gray-200">
                       <p>Valor do pedido</p>
@@ -347,6 +516,10 @@ const AdminOrderList = ({ orders, fetchData }) => {
           )}
         </motion.div>
       </div>
+
+      <div id="print" className="hidden">
+        <ComandaTemplate currentOrder={currentOrder} />
+      </div>
     </div>
   )
 }
@@ -355,19 +528,19 @@ export default AdminOrderList
 
 function formatDate(inputDate) {
   // Cria um objeto Date a partir da string de data
-  const date = new Date(inputDate);
+  const date = new Date(inputDate)
 
   // Verifica se a data é válida
   if (isNaN(date.getTime())) {
-    throw new Error("Data inválida");
+    throw new Error("Data inválida")
   }
 
   // Extrai horas e minutos
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
+  const hours = date.getHours()
+  const minutes = date.getMinutes()
 
   // Formata a string de saída
-  return `Pedido realizado às ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+  return `Pedido realizado às ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
 }
 
 function calculateDeliveryDate(inputDate, deliveryTimeInMinutes) {

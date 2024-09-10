@@ -426,7 +426,9 @@ const schemaCreateDelivery = z.object({
   name: z.string().min(3).max(40, {
     message: "O nome deve conter entre 3 e 40 caracteres.",
   }),
-  phoneNumber: zPhoneNumber
+  phoneNumber: z.string().min(11).max(13, {
+    message: "O telefone celular deve conter entre 11 e 13 caracteres.",
+  })
 })
 
 export async function createDeliveryAction(deliveryData) {

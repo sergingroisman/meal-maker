@@ -38,7 +38,7 @@ const OrderCard = ({ index, order }) => {
       <Card className="p-4">
         <div className="flex justify-between items-center">
           {badges(order.status)}
-          <p className="text-sm">Nº {`#${order._id.slice(0, 6)}`}</p>
+          <p className="text-sm">Nº {`#${order._id}`}</p>
         </div>
         {order.dishes && order.dishes.map((dish, index) => {
           return (

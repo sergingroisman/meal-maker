@@ -316,9 +316,9 @@ export const fetchOrdersByPartner = async (options = {}) => {
   }
 }
 
-export const updateOrderStatus = async (order_id, status_id) => {
+export const updateOrderStatus = async (order_id, status_id, delivery_id = null) => {
   try {
-    const response = await fetch(`${BASE_URL}/update-order/${order_id}`, {
+    const response = await fetch(`${BASE_URL}/update-order/${order_id}${delivery_id ? `/?delivery_id=${delivery_id}` : ""}`, {
       method: 'PATCH',
       headers: {
         "Content-Type": "application/json",

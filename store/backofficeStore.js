@@ -37,7 +37,6 @@ const backofficeStore = create((set) => ({
           quantityPendent,
         },
       }
-      console.log('Estado após addOrders:', newState)
       return newState
     }),
 

@@ -13,6 +13,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { BsThreeDotsVertical } from "react-icons/bs"
 import { Loader2 } from "lucide-react"
 import MaskedInput from "react-text-mask"
+import { formatIncompletePhoneNumber } from "libphonenumber-js"
 
 const INITIAL_STATE = {
   data: null,
@@ -35,7 +36,7 @@ const AdminDeliveryForm = ({ deliveries, onSubmitSuccess }) => {
     } else {
       setItemToEdit(currentDelivery)
       setName(currentDelivery.name)
-      setPhoneNumber(currentDelivery.phone_number)
+      setPhoneNumber(formatIncompletePhoneNumber(currentDelivery.phone_number))
     }
   }
 
@@ -131,7 +132,8 @@ const AdminDeliveryForm = ({ deliveries, onSubmitSuccess }) => {
                       id="phoneNumber"
                       name="phoneNumber"
                       type="phoneNumber"
-                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(formatIncompletePhoneNumber(e.target.value))}
                     />
                   </div>
                 </div>
@@ -159,7 +161,7 @@ const AdminDeliveryForm = ({ deliveries, onSubmitSuccess }) => {
                 return (
                   <TableRow key={index}>
                     <TableCell>{delivery.name}</TableCell>
-                    <TableCell>{delivery.phone_number}</TableCell>
+                    <TableCell>{formatIncompletePhoneNumber(delivery.phone_number)}</TableCell>
                     <TableCell key={index}>
                       <DropdownMenu key={index}>
                         <DropdownMenuTrigger asChild>

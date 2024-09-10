@@ -16,16 +16,23 @@ const CozinhaPage = () => {
   const addItem = useStore((state) => state.addItem)
 
   const loadBff = async () => {
-    const { dishes, accompaniments } = await fetchBff()
-    const { ok, data, error } = await getUserLoader()
-    setDishes(dishes)
-    setAccompaniments(accompaniments)
-    setUser(data)
-    setIsLoading(false)
-    setHasAddress(true)
+    try {
+      const { dishes, accompaniments } = await fetchBff()
+      const { ok, data, error } = await getUserLoader()
+      if (!data) {
+        notFound()
+      }
 
-    if (error) {
-      setError(error)
+      setDishes(dishes)
+      setAccompaniments(accompaniments)
+      setUser(data)
+      setIsLoading(false)
+      setHasAddress(true)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setIsLoading(false)
+      setHasAddress(true)
     }
   }
 

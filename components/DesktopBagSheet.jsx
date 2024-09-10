@@ -37,13 +37,13 @@ const DesktopBagSheet = ({ isAdmin = false }) => {
   const [isOpen, setIsOpen] = useState(false)
   const { isLoggedIn } = useSession()
   const router = useRouter()
-  const [radioValue, setRadioValue] = useState("entrega")
+  const [radioValue, setRadioValue] = useState(isAdmin ? "mesa" : "entrega")
   const [isOpenPayment, setIsOpenPayment] = useState(false)
 
   const handleSendOrder = async () => {
     setPending(true)
     try {
-      if (isDisbledButton) {
+      if (isDisbledButton() === false) {
         await createOrdersByUser({ ...data, delivery_type: radioValue })
         if (isAdmin === false) {
           router.push("/pedidos")
@@ -52,7 +52,10 @@ const DesktopBagSheet = ({ isAdmin = false }) => {
         setIsOpen(false)
         resetState()
       } else {
-        setIsOpenPayment(true);
+        setPending(false)
+        setIsOpen(false)
+        resetState()
+        setIsOpenPayment(true)
       }
     } catch (error) {
       setPending(false)
@@ -93,8 +96,12 @@ const DesktopBagSheet = ({ isAdmin = false }) => {
     setRadioValue(newValue)
   }
 
+  const handleClose = (id, newItem) => {
+    setIsOpenPayment(false)
+  }
+
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger className="flex justify-center items-center" asChild>
         <Button
           variant="outline"
@@ -120,10 +127,17 @@ const DesktopBagSheet = ({ isAdmin = false }) => {
       <SheetContent className="flex flex-col">
         <Card className="w-full max-w-md p-4">
           <CardHeader className="flex justify-between items-center">
-            <div>
-              <p className="text-sm text-muted-foreground">Seu pedido em</p>
-              <h2 className="text-lg font-bold">Vieiras Refeições</h2>
-            </div>
+            <IF condition={isAdmin === false}>
+              <div>
+                <p className="text-sm text-muted-foreground">Seu pedido em</p>
+                <h2 className="text-lg font-bold">Vieiras Refeições</h2>
+              </div>
+            </IF>
+            <IF condition={isAdmin === true}>
+              <div>
+                <p className="text-sm text-muted-foreground">Seu atual pedido na <span className="text-lg font-bold">Cozinha</span></p>
+              </div>
+            </IF>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
