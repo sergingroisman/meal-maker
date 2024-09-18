@@ -224,7 +224,15 @@ const AdminDishForm = ({ dishes, onSubmitSuccess }) => {
                     <div className="border-2 border-dashed border-gray-300 p-4 rounded-md">
                       <div className="flex flex-col items-center space-y-2">
                         {selectedImage ? (
-                          <img src={selectedImage} alt="Imagem selecionada" className="h-32 w-32 object-cover rounded-md" />
+                          <div className="h-32 w-32 relative">
+                            <Image
+                              src={selectedImage}
+                              alt="Imagem selecionada"
+                              className="object-cover rounded-md"
+                              layout="fill" // Faz a imagem preencher o contêiner
+                              objectFit="cover" // Mantém a proporção da imagem
+                            />
+                          </div>
                         ) : (
                           <FaUpload className="h-12 w-12 text-gray-400" />
                         )}

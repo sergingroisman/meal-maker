@@ -79,7 +79,7 @@ const AdminOrderList = ({ orders, fetchData, deliveries }) => {
   useEffect(() => {
     addOrders(orders)
     setCurrentOrder(orders[0])
-  }, [orders])
+  }, [addOrders, orders])
 
   const printDiv = (idText) => {
     const printEle = document.getElementById(idText)
@@ -183,7 +183,7 @@ const AdminOrderList = ({ orders, fetchData, deliveries }) => {
           <Button className="border border-yellow-500 bg-transparent text-yellow-500 hover:bg-yellow-500 hover:text-white">
             <LuRefreshCw className="h-5 w-5" />
             <span className="pl-2" onClick={() => handlerUpdateOrderStatus(1)}>
-              Alterar para "Pedido Confirmado"
+              Alterar para &quot;Pedido Confirmado&quot;
             </span>
           </Button>
         )
@@ -194,7 +194,7 @@ const AdminOrderList = ({ orders, fetchData, deliveries }) => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button className="border border-blue-500 bg-transparent text-blue-500 hover:bg-blue-500 hover:text-white">
-                    Alterar para "Pedido Saiu para Entrega"
+                    Alterar para &quot;Pedido Saiu para Entrega&quot;
                     <FaCaretDown className="ml-2 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -221,7 +221,7 @@ const AdminOrderList = ({ orders, fetchData, deliveries }) => {
               <Button className="border border-blue-500 bg-transparent text-blue-500 hover:bg-blue-500 hover:text-white">
                 <LuRefreshCw className="h-5 w-5" />
                 <span className="pl-2" onClick={() => handlerUpdateOrderStatus(2)}>
-                  Alterar para "Pedido Confirmado"
+                    Alterar para &quot;Pedido Confirmado&quot;
                 </span>
               </Button>
             </div>
@@ -232,7 +232,7 @@ const AdminOrderList = ({ orders, fetchData, deliveries }) => {
           <Button className="border border-green-500 bg-transparent text-green-500 hover:bg-green-500 hover:text-white">
             <LuRefreshCw className="h-5 w-5" />
             <span className="pl-2" onClick={() => handlerUpdateOrderStatus(3)}>
-              Alterar para "Pedido Entregue"
+              Alterar para &quot;Pedido Entregue&quot;
             </span>
           </Button>
         )

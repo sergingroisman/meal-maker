@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Label } from "./ui/label"
 import { FaUpload } from "react-icons/fa"
 import { Button } from "./ui/button"
+import Image from "next/image"
 
 
 const ImageUpload = () => {
@@ -29,7 +30,13 @@ const ImageUpload = () => {
       <div className="border-2 border-dashed border-gray-300 p-4 rounded-md">
         <div className="flex flex-col items-center space-y-2">
           {selectedImage ? (
-            <img src={selectedImage} alt="Imagem selecionada" className="h-32 w-32 object-cover rounded-md" />
+            <Image
+              src={selectedImage}
+              alt="Imagem selecionada"
+              layout="fill" // Faz a imagem preencher o contêiner
+              objectFit="cover" // Mantém a proporção da imagem
+              className="rounded-md" // Adiciona bordas arredondadas
+            />
           ) : (
             <FaUpload className="h-12 w-12 text-gray-400" />
           )}

@@ -195,7 +195,11 @@ export async function loginUserAction(prevState, formData) {
 
   cookies().set("jwt", responseData.loggedIn.access_token, config)
   cookies().set("user_id", responseData.loggedIn._id, config)
-  redirect("/")
+  if (responseData.loggedIn?.role === "admin") {
+    redirect("/backoffice")
+  } else {
+    redirect("/")
+  }
 }
 
 const schemaCreateDish = z.object({
@@ -525,5 +529,4 @@ export async function deleteDeliveryAction(delivery_id) {
 export async function logoutAction() {
   cookies().set("jwt", "", { ...config, maxAge: 0 })
   cookies().set("user_id", "", { ...config, maxAge: 0 })
-  redirect("/")
 }

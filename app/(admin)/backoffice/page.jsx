@@ -88,7 +88,7 @@ const BackofficePage = () => {
     }, 10 * 60 * 1000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [updateDeliveryData])
 
   if (loading) {
     return <div>Carregando...</div>

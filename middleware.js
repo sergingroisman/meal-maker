@@ -14,35 +14,42 @@ const config = {
 export async function middleware(request) {
   const user = await getUserLoader()
   const currentPath = request.nextUrl.pathname
-
   const response = NextResponse.next()
 
+  // Limpar cookies em caso de erro de autenticação
   if (user.error && user?.error?.status === 400) {
-    const cookies = request.cookies
-    cookies.set("jwt", "", { ...config, maxAge: 0 })
-    cookies.set("user_id", "", { ...config, maxAge: 0 })
     response.cookies.set("jwt", "", { ...config, maxAge: 0 })
     response.cookies.set("user_id", "", { ...config, maxAge: 0 })
-  }
-
-  if (currentPath.startsWith("/pedidos") && user?.error?.status === 400) {
     return NextResponse.redirect(new URL("/signin", request.url))
   }
 
-  if (currentPath.startsWith("/pedidos") && user.ok === false) {
-    return NextResponse.redirect(new URL("/signin", request.url))
+  // Verificar se o usuário está tentando acessar o /backoffice
+  if (currentPath.startsWith("/backoffice")) {
+    if (!user.ok) {
+      return NextResponse.redirect(new URL("/signin", request.url))
+    }
+    if (user.data.role !== "admin") {
+      return NextResponse.redirect(new URL("/", request.url)) // Usuário logado, mas sem permissão de admin
+    }
   }
-  
-  if (currentPath.startsWith("/perfil") && user.ok === false) {
+
+  // Redirecionar não autenticados em outras rotas protegidas
+  const protectedPaths = ["/pedidos", "/perfil"]
+  if (protectedPaths.some(path => currentPath.startsWith(path)) && !user.ok) {
     return NextResponse.redirect(new URL("/signin", request.url))
   }
 
-  if (currentPath.startsWith("/signup") && user.ok === true) {
+  // Evitar acesso a /signup e /signin se já estiver logado
+  if (currentPath.startsWith("/signup") && user.ok) {
     return NextResponse.redirect(new URL("/", request.url))
   }
 
-  if (currentPath.startsWith("/signin") && user.ok === true) {
-    return NextResponse.redirect(new URL("/", request.url))
+  if (currentPath.startsWith("/signin") && user.ok) {
+    if (user.data.role === "admin") {
+      return NextResponse.redirect(new URL("/backoffice", request.url))
+    } else {
+      return NextResponse.redirect(new URL("/", request.url))
+    }
   }
 
   return response

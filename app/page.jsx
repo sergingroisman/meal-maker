@@ -4,7 +4,6 @@ import Header from "@/components/Header"
 // components
 import ListDishes from "@/components/ListDishes"
 import { fetchBff, getUserLoader } from "@/services/api"
-import { notFound } from "next/navigation"
 
 const Home = async () => {
   const { dishes, accompaniments } = await fetchBff()
