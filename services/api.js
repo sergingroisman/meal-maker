@@ -25,7 +25,7 @@ export const fetchBff = async (partner_id = 1, options = {}) => {
     return data
   } catch (error) {
     console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,
@@ -56,8 +56,8 @@ export const fetchOrdersByUser = async (options = {}) => {
     const data = await response.json()
     return data
   } catch (error) {
-    console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    console.error("Error retrieving data:", error.message)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,
@@ -96,7 +96,7 @@ export const createOrdersByUser = async (body) => {
     return data
   } catch (error) {
     console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,
@@ -134,7 +134,7 @@ export const createDish = async (body) => {
     return { data }
   } catch (error) {
     console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,
@@ -165,7 +165,7 @@ export const updateImgDish = async (file) => {
     return { data }
   } catch (error) {
     console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,
@@ -204,7 +204,7 @@ export const updateDish = async (dish_id, body) => {
     return data
   } catch (error) {
     console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,
@@ -235,7 +235,7 @@ export const deleteDish = async (dish_id) => {
     return data
   } catch (error) {
     console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,
@@ -275,7 +275,7 @@ export const updateUserAddress = async (body) => {
     return data
   } catch (error) {
     console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,
@@ -306,7 +306,7 @@ export const fetchOrdersByPartner = async (options = {}) => {
     return data
   } catch (error) {
     console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,
@@ -337,7 +337,7 @@ export const updateOrderStatus = async (order_id, status_id, delivery_id = null)
     return data
   } catch (error) {
     console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,
@@ -368,7 +368,7 @@ export const fetchDishes = async (options = {}) => {
     return data
   } catch (error) {
     console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,
@@ -399,7 +399,7 @@ export const fetchAccompaniments = async (options = {}) => {
     return data
   } catch (error) {
     console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,
@@ -438,7 +438,7 @@ export const createAccompaniments = async (body) => {
     return { data }
   } catch (error) {
     console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,
@@ -478,7 +478,7 @@ export const updateAccompaniments = async (acc_id, body) => {
     return data
   } catch (error) {
     console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,
@@ -509,7 +509,7 @@ export const deleteAccompaniment = async (acc_id) => {
     return data
   } catch (error) {
     console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,
@@ -540,7 +540,7 @@ export const fetchDeliveries = async (options = {}) => {
     return data
   } catch (error) {
     console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,
@@ -575,7 +575,7 @@ export const createDelivery = async (body) => {
     return { data }
   } catch (error) {
     console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,
@@ -610,7 +610,7 @@ export const updateDelivery = async (delivery_id, body) => {
     return data
   } catch (error) {
     console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,
@@ -641,7 +641,7 @@ export const deleteDelivery = async (delivery_id) => {
     return data
   } catch (error) {
     console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,
@@ -670,7 +670,7 @@ export const signUp = async (userData) => {
     return data
   } catch (error) {
     console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,
@@ -700,7 +700,7 @@ export const signIn = async (userData) => {
     return data
   } catch (error) {
     console.error("Error retrieving data:", error)
-    const errorData = JSON.parse(error)
+    const errorData = JSON.parse(error.message)
     return {
       error: {
         status: errorData?.status,

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { IoHomeOutline, IoHome } from "react-icons/io5"
 import { PiNotepad, PiNotepadDuotone } from "react-icons/pi"
@@ -16,7 +16,7 @@ import MobilePaymentSheet from "./MobilePaymentSheet"
 import useStore from "@/store/useStore"
 import { formatPrice } from "@/lib/utils"
 import MobileRemoveItemSheet from "./MobileRemoveItemSheet"
-import { createOrdersByUser } from "@/services/api"
+import { createOrdersByUser, getAuthToken } from "@/services/api"
 import { Loader2 } from "lucide-react"
 
 function Loader({ text }) {
@@ -56,8 +56,14 @@ const MobileTabBar = () => {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const [isOpenPayment, setIsOpenPayment] = useState(false)
-  const { isLoggedIn } = useSession()
+  const [ isLoggedIn, setIsLoggedIn ] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    getAuthToken().then(token => {
+      setIsLoggedIn(!!token)
+    })
+  }, [isOpen])
 
   const handleSendOrder = async () => {
     try {
@@ -175,7 +181,26 @@ const MobileTabBar = () => {
                 </div>
                 <MobilePaymentSheet isOpenPayment={isOpenPayment} setIsOpenPayment={setIsOpenPayment} />
                 <div className="p-4">
-                  {sheetFooterButtons()}
+                  {!isLoggedIn ? (
+                    <>
+                      <Link href="/signin">
+                        <Button onClick={() => setIsOpen(false)} variant="outline" className="w-full mt-4">
+                          Fazer login com Celular
+                        </Button>
+                      </Link>
+                    </>
+                  ) : (
+                    <div className="pt-[16px]">
+                      <Button
+                        aria-disabled={pending}
+                        disabled={pending}
+                        onClick={() => handleSendOrder()}
+                        className={`w-full text-white bg-accent`}
+                      >
+                        {pending ? <Loader text={"Loading"} /> : isDisbledButton() ? "Forma de pagamento" : "Fazer pedido"}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </SheetContent>
             </Sheet>

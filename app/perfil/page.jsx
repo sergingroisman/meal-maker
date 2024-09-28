@@ -1,39 +1,39 @@
 "use server"
 
 import Header from "@/components/Header"
-import AlertRefresh from "@/components/AlertRefresh"
-import OrderList from "@/components/OrderList"
-import { fetchOrdersByUser } from "@/services/api"
+import ProfileForm from "@/components/ProfileForm"
+import { getUserLoader } from "@/services/api"
 
 const Perfil = async () => {
   try {
-    const orders = await fetchOrdersByUser()
+    const { ok, data, error } = await getUserLoader()
 
-    if (!orders.ok || !orders.data) {
-      console.error("Erro ao carregar pedidos:", orders.error);
+    if (!ok || error) {
+      console.error("Erro ao carregar pedidos:", error);
       return (
         <div>
-          <h1>Erro ao carregar pedidos</h1>
+          <Header />
+          <section className="flex items-center justify-center py-2 xl:py-0">
+            <div className="container mx-auto px-4 py-4">
+              <h1>Erro ao carregar o perfil</h1>
+            </div>
+          </section>
         </div>
       )
     }
 
+
     return (
       <div>
         <Header />
-        <AlertRefresh />
-        <section className="flex items-center justify-center py-2 xl:py-0">
-          <div className="container mx-auto px-4 py-4">
-            <OrderList orders={orders.data} />
-          </div>
-        </section>
+        <ProfileForm user={data} />
       </div>
     )
   } catch (error) {
-    console.error("Erro ao carregar pedidos:", error);
+    console.error("Erro ao carregar os dados do usuário", error);
     return (
       <div>
-        <h1>Erro ao carregar pedidos</h1>
+        <h1>Erro ao carregar os dados do usuário</h1>
       </div>
     )
   }
